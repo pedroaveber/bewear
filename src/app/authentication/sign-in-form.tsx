@@ -1,7 +1,9 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod/v4';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,6 +23,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { authClient } from '@/lib/auth-client';
 
 const signInFormSchema = z.object({
   email: z.email('E-mail inválido').transform((value) => value.toLowerCase()),
@@ -30,6 +33,8 @@ const signInFormSchema = z.object({
 type SignInFormSchema = z.infer<typeof signInFormSchema>;
 
 export function SignInForm() {
+  const router = useRouter();
+
   const form = useForm<SignInFormSchema>({
     resolver: zodResolver(signInFormSchema),
     defaultValues: {
@@ -38,8 +43,19 @@ export function SignInForm() {
     },
   });
 
-  function onSubmit(data: SignInFormSchema) {
-    console.log('Form submitted:', data);
+  async function onSubmit(data: SignInFormSchema) {
+    await authClient.signIn.email({
+      email: data.email,
+      password: data.password,
+      fetchOptions: {
+        onSuccess: () => {
+          router.push('/');
+        },
+        onError: (context) => {
+          toast.error(context.error.message);
+        },
+      },
+    });
   }
 
   return (
@@ -87,7 +103,9 @@ export function SignInForm() {
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit">Entrar</Button>
+            <Button disabled={form.formState.isSubmitting} type="submit">
+              Entrar
+            </Button>
           </CardFooter>
         </Card>
       </form>
