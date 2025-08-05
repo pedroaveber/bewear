@@ -1,7 +1,9 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod/v4';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,6 +23,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { authClient } from '@/lib/auth-client';
 
 const signUpFormSchema = z
   .object({
@@ -46,6 +49,8 @@ const signUpFormSchema = z
 type SignUpFormSchema = z.infer<typeof signUpFormSchema>;
 
 export function SignUpForm() {
+  const router = useRouter();
+
   const form = useForm<SignUpFormSchema>({
     resolver: zodResolver(signUpFormSchema),
     defaultValues: {
@@ -56,8 +61,21 @@ export function SignUpForm() {
     },
   });
 
-  function onSubmit(data: SignUpFormSchema) {
-    console.log('Form submitted:', data);
+  async function onSubmit(data: SignUpFormSchema) {
+    await authClient.signUp.email({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      fetchOptions: {
+        onSuccess: () => {
+          toast.success('Conta criada com sucesso!');
+          router.push('/');
+        },
+        onError: (error) => {
+          toast.error(error.error.message);
+        },
+      },
+    });
   }
 
   return (
