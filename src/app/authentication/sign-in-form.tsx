@@ -103,9 +103,25 @@ export function SignInForm() {
             />
           </CardContent>
           <CardFooter>
-            <Button disabled={form.formState.isSubmitting} type="submit">
-              Entrar
-            </Button>
+            <div className="flex w-full flex-col gap-2">
+              <Button disabled={form.formState.isSubmitting} type="submit">
+                Entrar
+              </Button>
+
+              <div className="h-px w-full bg-muted-foreground/10" />
+
+              <Button
+                onClick={() =>
+                  authClient.signIn.social({
+                    provider: 'google',
+                  })
+                }
+                type="button"
+                variant="outline"
+              >
+                Entrar com Google
+              </Button>
+            </div>
           </CardFooter>
         </Card>
       </form>
