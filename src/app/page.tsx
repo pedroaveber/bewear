@@ -1,5 +1,45 @@
+import Image from 'next/image';
 import { Header } from '@/components/header';
+import { ProductsList } from '@/components/products-list';
+import { db } from '@/db';
 
-export default function Home() {
-  return <Header />;
+export default async function Home() {
+  const products = await db.query.productsTable.findMany({
+    with: {
+      variants: true,
+    },
+  });
+
+  return (
+    <>
+      <Header />
+      <div className="space-y-6">
+        <div className="px-5">
+          <Image
+            alt=""
+            className="h-auto w-full"
+            height={0}
+            quality={100}
+            sizes="100vw"
+            src="/banner-01.png"
+            width={0}
+          />
+        </div>
+
+        <ProductsList products={products} title="Mais vendidos" />
+
+        <div className="px-5">
+          <Image
+            alt=""
+            className="h-auto w-full"
+            height={0}
+            quality={100}
+            sizes="100vw"
+            src="/banner-02.png"
+            width={0}
+          />
+        </div>
+      </div>
+    </>
+  );
 }
