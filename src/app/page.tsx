@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { Header } from '@/components/header';
 import { ProductsList } from '@/components/products-list';
 import { db } from '@/db';
+import { CategorySelector } from './category-selector';
 
 export default async function Home() {
   const products = await db.query.productsTable.findMany({
@@ -9,6 +10,8 @@ export default async function Home() {
       variants: true,
     },
   });
+
+  const categories = await db.query.categoriesTable.findMany();
 
   return (
     <>
@@ -38,6 +41,10 @@ export default async function Home() {
             src="/banner-02.png"
             width={0}
           />
+        </div>
+
+        <div className="px-5">
+          <CategorySelector categories={categories} />
         </div>
       </div>
     </>
