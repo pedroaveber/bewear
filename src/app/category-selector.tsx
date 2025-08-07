@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import type { categoriesTable } from '@/db/schema';
 
@@ -11,11 +12,12 @@ export function CategorySelector({ categories }: CategorySelectorProps) {
       <div className="grid grid-cols-2 gap-3">
         {categories.map((category) => (
           <Button
+            asChild
             className="rounded-full bg-white font-semibold text-xs"
             key={category.id}
             variant="ghost"
           >
-            {category.name}
+            <Link href={`/categories/${category.slug}`}>{category.name}</Link>
           </Button>
         ))}
       </div>
