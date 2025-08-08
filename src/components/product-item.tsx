@@ -18,7 +18,10 @@ export function ProductItem({
   const firstVariant = product.variants[0];
 
   return (
-    <Link className="flex flex-col gap-4" href="/">
+    <Link
+      className="flex flex-col gap-4"
+      href={`/products/${product.slug}?variant=${firstVariant.slug}`}
+    >
       <Image
         alt={firstVariant.name}
         className="h-auto w-full rounded-3xl"
