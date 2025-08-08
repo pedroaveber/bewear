@@ -1,12 +1,18 @@
 'use client';
 
 import { MinusIcon, PlusIcon } from 'lucide-react';
-import { useState } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 import { Button } from '@/components/ui/button';
 
-export function QuantitySelector() {
-  const [quantity, setQuantity] = useState(1);
+interface QuantitySelectorProps {
+  quantity: number;
+  setQuantity: Dispatch<SetStateAction<number>>;
+}
 
+export function QuantitySelector({
+  quantity,
+  setQuantity,
+}: QuantitySelectorProps) {
   function handleIncrement() {
     setQuantity((prev) => prev + 1);
   }

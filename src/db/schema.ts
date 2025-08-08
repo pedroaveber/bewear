@@ -77,6 +77,13 @@ export const productsTable = pgTable('products', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
+export const usersRelations = relations(usersTable, ({ many, one }) => ({
+  sessions: many(sessionsTable),
+  accounts: many(accountsTable),
+  shippingAddresses: many(shippingAddressesTable),
+  carts: one(cartsTable),
+}));
+
 export const productsRelations = relations(productsTable, ({ one, many }) => ({
   category: one(categoriesTable, {
     fields: [productsTable.categoryId],
@@ -121,3 +128,88 @@ export const verificationsTable = pgTable('verifications', {
     () => /* @__PURE__ */ new Date()
   ),
 });
+
+export const shippingAddressesTable = pgTable('shipping_addresses', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => usersTable.id, { onDelete: 'cascade' }),
+  recipentName: text('recipient_name').notNull(),
+  street: text('street').notNull(),
+  number: text('number').notNull(),
+  complement: text('complement'),
+  neighborhood: text('neighborhood').notNull(),
+  city: text('city').notNull(),
+  state: text('state').notNull(),
+  zipCode: text('zip_code').notNull(),
+  country: text('country').notNull(),
+  phone: text('phone').notNull(),
+  taxpayerId: text('taxpayer_id').notNull(),
+  email: text('email').notNull(),
+  createdAt: timestamp('created_at').$defaultFn(
+    () => /* @__PURE__ */ new Date()
+  ),
+});
+
+export const shippingAddressesRelations = relations(
+  shippingAddressesTable,
+  ({ one }) => ({
+    user: one(usersTable, {
+      fields: [shippingAddressesTable.userId],
+      references: [usersTable.id],
+    }),
+    cart: one(cartsTable, {
+      fields: [shippingAddressesTable.id],
+      references: [cartsTable.shippingAddressId],
+    }),
+  })
+);
+
+export const cartsTable = pgTable('carts', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => usersTable.id, { onDelete: 'cascade' }),
+  shippingAddressId: uuid('shipping_address_id').references(
+    () => shippingAddressesTable.id,
+    {
+      onDelete: 'set null',
+    }
+  ),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const cartsRelations = relations(cartsTable, ({ one, many }) => ({
+  user: one(usersTable, {
+    fields: [cartsTable.userId],
+    references: [usersTable.id],
+  }),
+  shippingAddress: one(shippingAddressesTable, {
+    fields: [cartsTable.shippingAddressId],
+    references: [shippingAddressesTable.id],
+  }),
+  items: many(cartItemsTable),
+}));
+
+export const cartItemsTable = pgTable('cart_items', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  cartId: uuid('cart_id')
+    .notNull()
+    .references(() => cartsTable.id, { onDelete: 'cascade' }),
+  productVariantId: uuid('product_variant_id')
+    .notNull()
+    .references(() => productVariantsTable.id, { onDelete: 'cascade' }),
+  quantity: integer('quantity').notNull().default(1),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const cartItemsRelations = relations(cartItemsTable, ({ one }) => ({
+  cart: one(cartsTable, {
+    fields: [cartItemsTable.cartId],
+    references: [cartsTable.id],
+  }),
+  productVariant: one(productVariantsTable, {
+    fields: [cartItemsTable.productVariantId],
+    references: [productVariantsTable.id],
+  }),
+}));

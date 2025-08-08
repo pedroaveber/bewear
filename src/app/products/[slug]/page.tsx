@@ -6,12 +6,11 @@ import { createLoader, parseAsString, type SearchParams } from 'nuqs/server';
 import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
 import { ProductsList } from '@/components/products-list';
-import { Button } from '@/components/ui/button';
 import { db } from '@/db';
 import { productsTable } from '@/db/schema';
 import { formatCentsToBrl } from '@/helpers/money';
 import { cn } from '@/lib/utils';
-import { QuantitySelector } from './quantity-selector';
+import { ProductActions } from './product-actions';
 
 // Search Params
 const productPageSearchParams = {
@@ -102,14 +101,7 @@ export default async function ProductPage({
           </h3>
         </div>
 
-        <QuantitySelector />
-
-        <div className="flex flex-col gap-2">
-          <Button className="h-12 rounded-full" variant="outline">
-            Adicionar à sacola
-          </Button>
-          <Button className="h-12 rounded-full">Comprar agora</Button>
-        </div>
+        <ProductActions productVariantId={selectedVariant.id} />
 
         <p className="text-sm">{product.description}</p>
 

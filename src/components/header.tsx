@@ -1,9 +1,10 @@
 'use client';
 
-import { LogInIcon, LogOutIcon, MenuIcon } from 'lucide-react';
+import { LogInIcon, LogOutIcon, MenuIcon, ShoppingBagIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
+import { CartSheetContent } from './cart-sheet-content';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 import {
@@ -21,10 +22,22 @@ export function Header() {
     <header className="flex items-center justify-between p-5">
       <Image alt="Bewear" height={26.14} src="/logo.svg" width={100} />
 
-      <div className="flex items-center">
+      <div className="flex items-center gap-1">
         <Sheet>
           <SheetTrigger asChild>
-            <Button size="icon" variant="outline">
+            <Button size="icon" variant="ghost">
+              <ShoppingBagIcon />
+            </Button>
+          </SheetTrigger>
+
+          <CartSheetContent />
+        </Sheet>
+
+        <div className="h-4 w-px bg-muted-foreground/10" />
+
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button size="icon" variant="ghost">
               <MenuIcon />
             </Button>
           </SheetTrigger>
