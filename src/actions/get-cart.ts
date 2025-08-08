@@ -20,7 +20,11 @@ export async function getCart() {
     with: {
       items: {
         with: {
-          productVariant: true,
+          productVariant: {
+            with: {
+              product: true,
+            },
+          },
         },
       },
     },
@@ -36,9 +40,18 @@ export async function getCart() {
 
     return {
       ...newCart,
+      totalPriceInCents: 0,
       items: [],
     };
   }
 
-  return cart;
+  const totalPriceInCents = cart.items.reduce(
+    (total, item) => total + item.productVariant.priceInCents * item.quantity,
+    0
+  );
+
+  return {
+    ...cart,
+    totalPriceInCents,
+  };
 }
